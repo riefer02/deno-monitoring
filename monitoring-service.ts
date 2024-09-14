@@ -6,12 +6,13 @@ import sgMail from "npm:@sendgrid/mail"; // Import SendGrid Mail package
 const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY") || "";
 const TO_EMAIL = Deno.env.get("TO_EMAIL") || "";
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "";
+const URLS_TO_PING = Deno.env.get("URLS_TO_PING") || "";
 
 // Initialize SendGrid
 sgMail.setApiKey(SENDGRID_API_KEY);
 
-// List of URLs to ping
-const urlsToPing = ["https://api.abowlofred.com", "https://tolbertscms.com"];
+// Parse URLs string into an array
+const urlsToPing = URLS_TO_PING.split(",").map((url) => url.trim());
 
 // Function to check URLs
 async function checkUrls() {
