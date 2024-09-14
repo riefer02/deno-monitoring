@@ -65,15 +65,15 @@ This Deno-based application periodically pings a list of specified URLs (stored 
 - If a service is up:
   ```
   Checking URLs...
-  Service up: https://api.abowlofred.com
-  Service up: https://tolbertscms.com
+  Service up: https://api.example.com
+  Service up: https://example.com
   ```
 
 - If a service is down:
   ```
   Checking URLs...
-  Service down: https://api.abowlofred.com returned status 404
-  Email sent for https://api.abowlofred.com with status 404
+  Service down: https://api.example.com returned status 404
+  Email sent for https://api.example.com with status 404
   ```
 
 ## Contributing
