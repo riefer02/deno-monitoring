@@ -1,6 +1,3 @@
-Here's the updated README to reflect the changes where URLs are now stored as an environment variable and parsed in the code.
-
-```markdown
 # Service Status Monitoring with Deno and SendGrid
 
 This Deno-based application periodically pings a list of specified URLs (stored in an environment variable) and sends email notifications using SendGrid if any of these services are down (i.e., do not return a `200` HTTP status code). It uses Deno's native support for npm packages to integrate the `@sendgrid/mail` package for email notifications.
