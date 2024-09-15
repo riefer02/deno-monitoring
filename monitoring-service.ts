@@ -53,7 +53,7 @@ async function sendEmailNotification(url: string, status: string) {
 }
 
 // Schedule the checkUrls function to run every 5 minutes using Deno's cron
-Deno.cron("*/5 * * * *", async () => {
+Deno.cron("rief-productions-site-monitoring", "*/5 * * * *", async () => {
   console.log("Checking URLs...");
   await checkUrls();
 });
