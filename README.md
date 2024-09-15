@@ -83,6 +83,3 @@ Contributions are welcome! Please open an issue or submit a pull request if you'
 ## License
 
 This project is licensed under the MIT License.
-```
-
-Feel free to update the placeholders (like `yourusername`, `your-repo`, `your_file.ts`) with your actual project details. This README now reflects the updated functionality where URLs are stored securely in an environment variable and parsed in the code.
