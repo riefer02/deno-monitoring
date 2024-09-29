@@ -1,20 +1,29 @@
-// Import necessary modules
-import "https://deno.land/std@0.186.0/dotenv/load.ts"; // Automatically loads .env variables into Deno.env
-import sgMail from "npm:@sendgrid/mail"; // Import SendGrid Mail package
+import "https://deno.land/std@0.186.0/dotenv/load.ts";
+import { SMTPClient } from "https://deno.land/x/denomailer/mod.ts";
 
-// Access environment variables using Deno.env.get
-const SENDGRID_API_KEY = Deno.env.get("SENDGRID_API_KEY") || "";
 const TO_EMAIL = Deno.env.get("TO_EMAIL") || "";
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "";
 const URLS_TO_PING = Deno.env.get("URLS_TO_PING") || "";
 
-// Initialize SendGrid
-sgMail.setApiKey(SENDGRID_API_KEY);
+const SMTP_HOSTNAME = Deno.env.get("SMTP_HOSTNAME") || "";
+const SMTP_PORT = Number(Deno.env.get("SMTP_PORT")) || 465;
+const SMTP_USERNAME = Deno.env.get("SMTP_USERNAME") || "";
+const SMTP_PASSWORD = Deno.env.get("SMTP_PASSWORD") || "";
 
-// Parse URLs string into an array
+const client = new SMTPClient({
+  connection: {
+    hostname: SMTP_HOSTNAME,
+    port: SMTP_PORT,
+    tls: true,
+    auth: {
+      username: SMTP_USERNAME,
+      password: SMTP_PASSWORD,
+    },
+  },
+});
+
 const urlsToPing = URLS_TO_PING.split(",").map((url) => url.trim());
 
-// Function to check URLs
 async function checkUrls() {
   for (const url of urlsToPing) {
     try {
@@ -34,26 +43,30 @@ async function checkUrls() {
   }
 }
 
-// Function to send email notifications using SendGrid
 async function sendEmailNotification(url: string, status: string) {
-  const msg = {
-    to: TO_EMAIL,
+  const email = {
     from: FROM_EMAIL,
+    to: TO_EMAIL,
     subject: `Service Down Alert! - ${url}`,
-    text: `The service at ${url} is down. Status: ${status}.`,
+    content: `The service at ${url} is down. Status: ${status}.`,
     html: `<strong>The service at ${url} is down. Status: ${status}.</strong>`,
   };
 
   try {
-    await sgMail.send(msg);
+    await client.send(email);
     console.log(`Email sent for ${url} with status ${status}`);
   } catch (error) {
     console.error(`Failed to send email: ${error.message}`);
   }
 }
 
-// Schedule the checkUrls function to run every 5 minutes using Deno's cron
+async function closeClient() {
+  await client.close();
+  console.log("SMTP client closed.");
+}
+
 Deno.cron("site-monitoring", "*/5 * * * *", async () => {
   console.log("Checking URLs...");
   await checkUrls();
+  await closeClient();
 });
