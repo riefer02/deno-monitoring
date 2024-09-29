@@ -1,17 +1,17 @@
-# Service Status Monitoring with Deno and SendGrid
+# Service Status Monitoring with Deno and Amazon SES
 
-This Deno-based application periodically pings a list of specified URLs (stored in an environment variable) and sends email notifications using SendGrid if any of these services are down (i.e., do not return a `200` HTTP status code). It uses Deno's native support for npm packages to integrate the `@sendgrid/mail` package for email notifications.
+This Deno-based application periodically pings a list of specified URLs (stored in an environment variable) and sends email notifications using Amazon SES via SMTP if any of these services are down (i.e., do not return a `200` HTTP status code). It uses the `denomailer` package to integrate SMTP for sending emails.
 
 ## Features
 
 - Periodically checks the status of specified URLs.
-- Sends email alerts via SendGrid when a service is down.
-- Uses environment variables to securely manage configuration, including URLs to monitor.
+- Sends email alerts via Amazon SES when a service is down.
+- Uses environment variables to securely manage configuration, including URLs to monitor and SMTP credentials.
 
 ## Prerequisites
 
 - [Deno](https://deno.land/) installed on your machine.
-- A SendGrid account with an API key.
+- An Amazon SES account with SMTP credentials.
 - Environment variables set up in a `.env` file.
 
 ## Installation
@@ -27,13 +27,17 @@ This Deno-based application periodically pings a list of specified URLs (stored 
    Create a `.env` file in the root directory with the following content:
 
    ```env
-   SENDGRID_API_KEY=your_sendgrid_api_key
    TO_EMAIL=recipient@example.com
-   FROM_EMAIL=your_verified_sendgrid_sender@example.com
+   FROM_EMAIL=your_verified_ses_sender@example.com
    URLS_TO_PING=https://api.example.com,https://example.com
+
+   SMTP_HOSTNAME=email-smtp.us-east-2.amazonaws.com
+   SMTP_PORT=465
+   SMTP_USERNAME=your_ses_smtp_username
+   SMTP_PASSWORD=your_ses_smtp_password
    ```
 
-   Replace `your_sendgrid_api_key`, `recipient@example.com`, and `your_verified_sendgrid_sender@example.com` with your SendGrid API key, the recipient's email, and the sender's verified email in your SendGrid account. Add all the URLs you want to monitor as a comma-separated list for `URLS_TO_PING`.
+   Replace `recipient@example.com`, `your_verified_ses_sender@example.com`, `your_ses_smtp_username`, and `your_ses_smtp_password` with the correct values from your Amazon SES account. Add all the URLs you want to monitor as a comma-separated list for `URLS_TO_PING`.
 
 3. **Run the Application**:
 
@@ -50,6 +54,7 @@ This Deno-based application periodically pings a list of specified URLs (stored 
 ## Configuration
 
 - **URLs to Monitor**: Update the `URLS_TO_PING` environment variable in the `.env` file with a comma-separated list of the URLs you want to monitor.
+- **Amazon SES SMTP Settings**: Update the SMTP credentials in the `.env` file using your Amazon SES account details.
 - **Cron Schedule**: The application is set to check URLs every 5 minutes by default using Deno's cron functionality. You can adjust the schedule by modifying the cron expression in `Deno.cron("*/5 * * * *", ...)`.
 
 ## Usage
