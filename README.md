@@ -1,45 +1,44 @@
-# Service Status Monitoring with Deno and Amazon SES
+# Service Status Monitoring with Deno and Nodemailer
 
-This Deno-based application periodically pings a list of specified URLs (stored in an environment variable) and sends email notifications using Amazon SES via SMTP if any of these services are down (i.e., do not return a `200` HTTP status code). It uses the `denomailer` package to integrate SMTP for sending emails.
+This Deno-based application periodically pings a list of specified URLs (stored in an environment variable) and sends email notifications via SMTP if any of these services are down (i.e., do not return a `200` HTTP status code). It uses `Nodemailer` for sending emails.
 
 ## Features
 
 - Periodically checks the status of specified URLs.
-- Sends email alerts via Amazon SES when a service is down.
-- Uses environment variables to securely manage configuration, including URLs to monitor and SMTP credentials.
+- Sends email alerts when a service is down.
+- Securely manages configuration using environment variables, including URLs to monitor and SMTP credentials.
 
 ## Prerequisites
 
-- [Deno](https://deno.land/) installed on your machine.
-- An Amazon SES account with SMTP credentials.
-- Environment variables set up in a `.env` file.
+- [Deno](https://deno.land/) installed.
+- SMTP credentials from your email provider.
+- Set up environment variables in a `.env` file.
+
+## Environment Setup
+
+Create a `.env` file with the following content:
+
+```env
+TO_EMAIL=recipient@example.com
+FROM_EMAIL=your_sender@example.com
+URLS_TO_PING=https://api.example.com,https://example.com
+
+SMTP_HOSTNAME=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USERNAME=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
+```
+
+Replace the placeholders with your email provider's SMTP credentials and the URLs you want to monitor.
 
 ## Installation
 
-1. **Clone the Repository**:
+1. **Install Nodemailer**:
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
+   npm install nodemailer
    ```
 
-2. **Set Up Environment Variables**:
-
-   Create a `.env` file in the root directory with the following content:
-
-   ```env
-   TO_EMAIL=recipient@example.com
-   FROM_EMAIL=your_verified_ses_sender@example.com
-   URLS_TO_PING=https://api.example.com,https://example.com
-
-   SMTP_HOSTNAME=email-smtp.us-east-2.amazonaws.com
-   SMTP_PORT=465
-   SMTP_USERNAME=your_ses_smtp_username
-   SMTP_PASSWORD=your_ses_smtp_password
-   ```
-
-   Replace `recipient@example.com`, `your_verified_ses_sender@example.com`, `your_ses_smtp_username`, and `your_ses_smtp_password` with the correct values from your Amazon SES account. Add all the URLs you want to monitor as a comma-separated list for `URLS_TO_PING`.
-
-3. **Run the Application**:
+2. **Run the Application**:
 
    Use the following command to run the application:
 
@@ -53,34 +52,25 @@ This Deno-based application periodically pings a list of specified URLs (stored 
 
 ## Configuration
 
-- **URLs to Monitor**: Update the `URLS_TO_PING` environment variable in the `.env` file with a comma-separated list of the URLs you want to monitor.
-- **Amazon SES SMTP Settings**: Update the SMTP credentials in the `.env` file using your Amazon SES account details.
-- **Cron Schedule**: The application is set to check URLs every 5 minutes by default using Deno's cron functionality. You can adjust the schedule by modifying the cron expression in `Deno.cron("*/5 * * * *", ...)`.
-
-## Usage
-
-- The application will periodically check the status of the URLs specified in the `URLS_TO_PING` environment variable.
-- If a URL does not return a `200` HTTP status code, an email alert will be sent to the recipient specified in the `.env` file.
+- **URLs to Monitor**: Update the `URLS_TO_PING` environment variable with a comma-separated list of URLs you want to monitor.
+- **SMTP Settings**: Add your email provider's SMTP credentials in the `.env` file.
+- **Cron Schedule**: The application checks URLs every 5 minutes by default using Deno's cron functionality. You can modify the cron expression in `Deno.cron("*/5 * * * *", ...)` to adjust the frequency.
 
 ## Example Output
 
-- If a service is up:
+- **If a service is up**:
   ```
   Checking URLs...
   Service up: https://api.example.com
   Service up: https://example.com
   ```
 
-- If a service is down:
+- **If a service is down**:
   ```
   Checking URLs...
   Service down: https://api.example.com returned status 404
   Email sent for https://api.example.com with status 404
   ```
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request if you'd like to improve the functionality or fix bugs.
 
 ## License
 
